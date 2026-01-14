@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Churn Predictor - AI Powered</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 40px;
+      }
+
+      h1 {
+        color: #667eea;
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 40px;
+        font-size: 1.1em;
+      }
+
+      .upload-section {
+        border: 3px dashed #667eea;
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        margin-bottom: 30px;
+        transition: all 0.3s;
+      }
+
+      .upload-section:hover {
+        border-color: #764ba2;
+        background: #f8f9ff;
+      }
+
+      .upload-icon {
+        font-size: 4em;
+        margin-bottom: 20px;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      .upload-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 40px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .upload-btn:hover {
+        transform: scale(1.05);
+      }
+
+      .analyze-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        padding: 18px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.2em;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: transform 0.2s;
+      }
+
+      .analyze-btn:hover:not(:disabled) {
+        transform: scale(1.02);
+      }
+
+      .analyze-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .progress-container {
+        display: none;
+        margin-top: 30px;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 30px;
+        background: #f0f0f0;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-bottom: 15px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        transition: width 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+      }
+
+      .status-message {
+        text-align: center;
+        color: #666;
+        font-size: 1.1em;
+      }
+
+      .alert {
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .file-info {
+        text-align: center;
+        margin-top: 15px;
+        color: #666;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 40px;
+      }
+
+      .feature-card {
+        text-align: center;
+        padding: 20px;
+        background: #f8f9ff;
+        border-radius: 15px;
+      }
+
+      .feature-icon {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+
+      .view-results-btn {
+        display: inline-block;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 15px 40px;
+        border-radius: 50px;
+        text-decoration: none;
+        margin-top: 20px;
+        transition: transform 0.2s;
+      }
+
+      .view-results-btn:hover {
+        transform: scale(1.05);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🤖 Customer Churn Predictor</h1>
+      <p class="subtitle">AI-Powered Predictive Analytics with CrewAI & GROQ</p>
+
+      <div id="alerts"></div>
+
+      <div class="upload-section">
+        <div class="upload-icon">📊</div>
+        <h3>Upload Your Customer Data</h3>
+        <p style="margin: 15px 0; color: #666">
+          CSV file with customer information
+        </p>
+        <input type="file" id="fileInput" accept=".csv" />
+        <button
+          class="upload-btn"
+          onclick="document.getElementById('fileInput').click()"
+        >
+          Choose File
+        </button>
+        <div class="file-info" id="fileInfo"></div>
+      </div>
+
+      <button class="analyze-btn" id="analyzeBtn" disabled>
+        🚀 Start AI Analysis
+      </button>
+
+      <div class="progress-container" id="progressContainer">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill">0%</div>
+        </div>
+        <div class="status-message" id="statusMessage">Initializing...</div>
+      </div>
+
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-icon">🤖</div>
+          <h4>5 AI Agents</h4>
+          <p>Collaborative intelligence</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h4>ML Models</h4>
+          <p>Multiple algorithms</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💰</div>
+          <h4>ROI Analysis</h4>
+          <p>Business insights</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentJobId = null;
+
+      document
+        .getElementById("fileInput")
+        .addEventListener("change", async function (e) {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const formData = new FormData();
+          formData.append("file", file);
+
+          try {
+            const response = await fetch("/upload", {
+              method: "POST",
+              body: formData,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              showAlert("success", data.message);
+              document.getElementById("fileInfo").innerHTML = `
+                        ✓ ${file.name} (${data.rows} rows, ${data.columns} columns)
+                    `;
+              document.getElementById("analyzeBtn").disabled = false;
+            } else {
+              showAlert("error", data.error);
+            }
+          } catch (error) {
+            showAlert("error", "Failed to upload file: " + error.message);
+          }
+        });
+
+      document
+        .getElementById("analyzeBtn")
+        .addEventListener("click", async function () {
+          this.disabled = true;
+          document.getElementById("progressContainer").style.display = "block";
+
+          try {
+            const response = await fetch("/analyze", {
+              method: "POST",
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              currentJobId = data.job_id;
+              checkStatus();
+            } else {
+              showAlert("error", data.error);
+              this.disabled = false;
+            }
+          } catch (error) {
+            showAlert("error", "Failed to start analysis: " + error.message);
+            this.disabled = false;
+          }
+        });
+
+      async function checkStatus() {
+        if (!currentJobId) return;
+
+        try {
+          const response = await fetch(`/status/${currentJobId}`);
+          const data = await response.json();
+
+          document.getElementById("progressFill").style.width =
+            data.progress + "%";
+          document.getElementById("progressFill").textContent =
+            data.progress + "%";
+          document.getElementById("statusMessage").textContent = data.message;
+
+          if (data.status === "completed") {
+            showAlert("success", "Analysis completed successfully!");
+            document.getElementById("statusMessage").innerHTML = `
+                        ${data.message}<br><br>
+                        <a href="/results" class="view-results-btn">View Results →</a>
+                    `;
+          } else if (data.status === "failed") {
+            showAlert("error", data.message);
+            document.getElementById("analyzeBtn").disabled = false;
+          } else {
+            setTimeout(checkStatus, 2000);
+          }
+        } catch (error) {
+          showAlert("error", "Failed to check status");
+        }
+      }
+
+      function showAlert(type, message) {
+        const alertsDiv = document.getElementById("alerts");
+        const alertClass = type === "success" ? "alert-success" : "alert-error";
+        alertsDiv.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+
+        setTimeout(() => {
+          alertsDiv.innerHTML = "";
+        }, 5000);
+      }
+    </script>
+  </body>
+</html>
