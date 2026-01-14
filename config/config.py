@@ -25,4 +25,5 @@ MEDIUM_RISK_THRESHOLD = 0.4
 
 # Business metrics
 CUSTOMER_LIFETIME_VALUE = 1000  # Average CLV in dollars
+
 INTERVENTION_COST = 100  # Cost per retention intervention
